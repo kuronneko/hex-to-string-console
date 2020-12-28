@@ -85,87 +85,99 @@ public class kuroEncrypterTool {
     }
 
     private static String loadHexToString(String input) { //input mus be encrypted text before encrypted with this tool
-
+        String inputCutFirstPart = ""; //Store first cut
+        String inputCutSecondPart = ""; //Store second cut
+        StringBuffer inputBuffered = new StringBuffer(input); //buffered input
+        String inputConvertToString = ""; //store final String
         try {
-            StringBuffer inputBuffered = new StringBuffer(input); //buffered input
             inputBuffered.reverse().toString();  //reverse input
-            String inputConvertToString = convertHexToString(inputBuffered.toString()); //convert hexadecimal input to string (still be hexa because need a second convert)
+            inputConvertToString = convertHexToString(inputBuffered.toString()); //convert hexadecimal input to string (still be hexa because need a second convert)
 
             //check lenght of input if no pair
             if (inputConvertToString.length() % 2 == 0) {
-                String inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
-                String inputCutSecondPart = inputConvertToString.substring(inputConvertToString.length() / 2, inputConvertToString.length()); //second cut
-                return convertHexToString(inputCutSecondPart + inputCutFirstPart); //join inputs and convert again from hex to string
-            } else {
-                String inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
-                String inputCutSecondPart = inputConvertToString.substring((inputConvertToString.length() / 2) - 1, inputConvertToString.length()); //second cut
-                return convertHexToString(inputCutSecondPart + inputCutFirstPart); //join inputs and convert again from hex to string
-            }
-        } catch (Exception error) {
+                inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
+                inputCutSecondPart = inputConvertToString.substring(inputConvertToString.length() / 2, inputConvertToString.length()); //second cut
 
+            } else {
+                inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
+                inputCutSecondPart = inputConvertToString.substring((inputConvertToString.length() / 2) - 1, inputConvertToString.length()); //second cut
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return "Invalid Input ;___;";
+        return convertHexToString(inputCutSecondPart + inputCutFirstPart); //join inputs and convert again from hex to string
 
     }
 
-    private static String loadFileType(String input) { //input must be filename without his extension
-        File file = new File(input + ".aoec"); //declare filetype
+    private static String loadFileType(String filename) { //input must be filename without his extension
+        File file = new File(filename + getConfigParameters().getProperty("fileExtension")); //declare filetype
         String fileTemporaryContainer = "";  // storage for file content
+        String inputCutFirstPart = ""; // store first part
+        String inputCutSecondPart = ""; //store second part
+        StringBuffer inputBuffered = new StringBuffer(); //store string read file
+        String inputConvertToString = ""; // store final String
+        Object[] lines;
+
         try {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
 
-            Object[] lines = br.lines().toArray();      //read file and store content on variable
+            lines = br.lines().toArray();      //read file and store content on variable
             for (int i = 0; i < lines.length; i++) {
                 fileTemporaryContainer = fileTemporaryContainer + lines[i].toString();
             }
-
-            StringBuffer inputBuffered = new StringBuffer(fileTemporaryContainer); //buffered input
+            inputBuffered.append(fileTemporaryContainer);//buffered input
             inputBuffered.reverse().toString();  //reverse input
-            String inputConvertToString = convertHexToString(inputBuffered.toString()); //convert hexadecimal input to string (still be hexa because need a second convert)
+            inputConvertToString = convertHexToString(inputBuffered.toString()); //convert hexadecimal input to string (still be hexa because need a second convert)
 
             //check lenght of input if no pair
             if (inputConvertToString.length() % 2 == 0) {
-                String inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
-                String inputCutSecondPart = inputConvertToString.substring(inputConvertToString.length() / 2, inputConvertToString.length()); //second cut
-                return convertHexToString(inputCutSecondPart + inputCutFirstPart); //join inputs and convert again from hex to string
-            } else {
-                String inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
-                String inputCutSecondPart = inputConvertToString.substring((inputConvertToString.length() / 2) - 1, inputConvertToString.length()); //second cut
-                return convertHexToString(inputCutSecondPart + inputCutFirstPart); //join inputs and convert again from hex to string
-            }
-        } catch (Exception error) {
+                inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
+                inputCutSecondPart = inputConvertToString.substring(inputConvertToString.length() / 2, inputConvertToString.length()); //second cut
 
+            } else {
+                inputCutFirstPart = inputConvertToString.substring(0, inputConvertToString.length() / 2); //cut input
+                inputCutSecondPart = inputConvertToString.substring((inputConvertToString.length() / 2) - 1, inputConvertToString.length()); //second cut
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return "Invalid Input ;___;";
+        return convertHexToString(inputCutSecondPart + inputCutFirstPart); //join inputs and convert again from hex to string
 
     }
 
     private static String saveTextToHex(String input, String filename) { //input must be normal text
+        String randomCode = randomString(Integer.parseInt(getConfigParameters().getProperty("fileNameLenght"))); //generate random filename
+        File file = new File(filename + "_" + randomCode + getConfigParameters().getProperty("fileExtension")); //declare filename with his location
+        String inputCutFirstPart = ""; //store first cut
+        String inputCutSecondPart = ""; //store second cut
+        String secondInputBuffered = ""; //join parts
+        StringBuffer secondHexInputContainer = new StringBuffer(); //store final hex
 
         try {
-            String randomCode = randomString(Integer.parseInt(getConfigParameters().getProperty("fileNameLenght"))); //generate random filename
-            File file = new File(filename + "_" + randomCode + getConfigParameters().getProperty("fileExtension")); //declare filename with his location
             FileWriter fw = new FileWriter(file); // write file
             BufferedWriter bw = new BufferedWriter(fw); //buffered file
 
-            String inputCutFirstPart = convertStringToHex(input).substring(0, convertStringToHex(input).length() / 2); // cut input
-            String inputCutSecondPart = convertStringToHex(input).substring(convertStringToHex(input).length() / 2, convertStringToHex(input).length()); //second cut
+            inputCutFirstPart = convertStringToHex(input).substring(0, convertStringToHex(input).length() / 2); // cut input
+            inputCutSecondPart = convertStringToHex(input).substring(convertStringToHex(input).length() / 2, convertStringToHex(input).length()); //second cut
 
-            String secondInputBuffered = inputCutSecondPart + inputCutFirstPart; //Store input in a second input buffered (turn second cut first and second to first)    
-            StringBuffer secondHexInputContainer = new StringBuffer(convertStringToHex(secondInputBuffered)); //String to hex again and store on hex container
+            secondInputBuffered = inputCutSecondPart + inputCutFirstPart; //Store input in a second input buffered (turn second cut first and second to first)    
+            secondHexInputContainer.append(convertStringToHex(secondInputBuffered)); //String to hex again and store on hex container
 
             secondHexInputContainer.reverse(); // reverse file text
             bw.write(secondHexInputContainer.toString()); //write file text
             bw.newLine();
             bw.close();
             fw.close();
-            return secondHexInputContainer.toString(); //return text
 
-        } catch (IOException ex) {
-            Logger.getLogger(kuroEncrypterTool.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return "Invalid Input ;_______;";
+
+        return secondHexInputContainer.toString(); //return text
 
     }
 
